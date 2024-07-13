@@ -1,6 +1,6 @@
-from typing import Union
-from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
+
+from pydantic import BaseModel, Field
 
 
 class CardTemplateConfig(BaseModel):

@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from uuid import UUID
 
 from fsrs.models import SchedulingInfo
-from pydantic import BaseModel
 
 from core.models.card import Card
 from core.models.deck import Deck

@@ -1,12 +1,12 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
 from core.repository.interfaces import RepositoryError
 from core.service import CardService, DeckService
-from exceptions.exceptions import DeckErrorException, DeckNotFoundException, CardNotFoundException
+from exceptions.exceptions import CardNotFoundException, DeckErrorException, DeckNotFoundException
 from schemas.request import NewDeckRequest
-from schemas.response import CardResponse, DeckResponse, BaseExeptionResponse
+from schemas.response import BaseExeptionResponse, CardResponse, DeckResponse
 
 deck_router = APIRouter()
 
@@ -64,7 +64,7 @@ def get_deck_info(
 ) -> list[UUID]:
     try:
         deck_info = deck_service.get_deck_info(deck_id=deck_id)
-    except RecursionError as err:
+    except RecursionError:
         raise DeckNotFoundException(message=str(deck_id))
 
     return deck_info

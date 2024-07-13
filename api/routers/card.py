@@ -5,11 +5,11 @@ from fastapi import APIRouter, Depends, Request
 from fsrs import Rating
 from fsrs.models import SchedulingInfo
 
-from core.repository.interfaces import CardNotFoundError, GeneralError, RepositoryError
+from core.repository.interfaces import CardNotFoundError, RepositoryError
 from core.service import CardService
 from exceptions.exceptions import CardErrorException, CardNotFoundException, UnknownRatingException
 from schemas.request import NewCardrequest, RateCardRequest
-from schemas.response import CardResponse, BaseExeptionResponse
+from schemas.response import BaseExeptionResponse, CardResponse
 
 card_router = APIRouter()
 

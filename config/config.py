@@ -1,7 +1,7 @@
 from typing import Union
+
 from fastapi import APIRouter
 from fsrs import FSRS
-from pydantic import BaseModel
 
 from core.repository.interfaces import (
     CardsRepositoryInterface,

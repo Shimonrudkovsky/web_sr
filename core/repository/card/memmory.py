@@ -22,7 +22,7 @@ class CardMemoryRepository(CardsRepositoryInterface):
     def get_next_due(self, deck_id: UUID) -> Card:
         cards = self.get_by_deck_id(deck_id=deck_id)
         if len(cards) == 0:
-            raise CardNotFoundError(message=f"can't find any cards in the deck")
+            raise CardNotFoundError(message="can't find any cards in the deck")
         return sorted(cards, key=lambda c: c.due)[0]
 
     def get_by_deck_id(self, deck_id: UUID) -> list[Card]:

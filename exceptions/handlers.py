@@ -1,8 +1,7 @@
 from typing import Union
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
-
 
 from exceptions.exceptions import CardErrorException, CardNotFoundException, DeckErrorException, DeckNotFoundException
 

@@ -1,7 +1,5 @@
-from typing import Any, Dict
 
 from fastapi import HTTPException
-from typing_extensions import Annotated, Doc
 
 
 class CardErrorException(HTTPException):

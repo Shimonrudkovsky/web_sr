@@ -25,7 +25,7 @@ class DeckMemmoryRepository(DeckRepositoryInterface):
     def get_all(self) -> list[Deck]:
         decks: list[Deck] = list(self.storage.values())
         if decks == []:
-            raise DeckNotFoundError(message=f"empty deck list")
+            raise DeckNotFoundError(message="empty deck list")
 
         return decks
 

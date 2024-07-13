@@ -1,11 +1,10 @@
 import os
 import sys
-from uuid import UUID, uuid4
+from uuid import UUID
 
 import pytest
-from fastapi import APIRouter
 
-from config.config import Config, ConfigError, Repositories
+from config.config import Repositories
 from core.models.card import Card
 from core.models.deck import Deck
 from core.models.template import CardTemplate
@@ -68,7 +67,7 @@ def fake_repositories() -> Repositories:
         def get_all(self) -> list[Deck]:
             return [deck, Deck(name="test deck2")]
 
-    card_repo = FakeCardsRepository()
+    FakeCardsRepository()
     template_repo = FakeTemplateRepository()
     deck_repo = FakeDeckRepository()
     return Repositories(cards=FakeCardsRepository(), templates=template_repo, decks=deck_repo)

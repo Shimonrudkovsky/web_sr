@@ -25,5 +25,5 @@ def test_config(description, port, is_routers, is_repositories, expected_error, 
         assert result.port == port
         assert result.routers == routers
     except Exception as err:
-        assert type(err) == type(expected_error)
+        assert err is expected_error
         assert err.message == expected_error.message

@@ -1,6 +1,6 @@
-from typing import Union
+from uuid import UUID, uuid4
+
 from pydantic import BaseModel, Field
-from uuid import UUID, uuid4 
 
 
 class Deck(BaseModel):
