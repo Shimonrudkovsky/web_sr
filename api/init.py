@@ -12,12 +12,12 @@ class FastAPI_(FastAPI):
         self.config: Config = config
 
 
-class ServerGenerator():
+class ServerGenerator:
     config: Config
 
     def __init__(self, config: Config) -> None:
         self.config = config
-    
+
     def initWebServer(self) -> FastAPI:
         app = FastAPI_(config=self.config)
 
@@ -32,7 +32,7 @@ class ServerGenerator():
 
         for router in self.config.routers:
             app.include_router(router=router)
-        
+
         app.state
-        
+
         return app

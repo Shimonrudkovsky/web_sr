@@ -1,4 +1,5 @@
 from uuid import UUID, uuid4
+
 from fsrs import Card as OriginalCard
 
 
@@ -14,7 +15,7 @@ class Card(OriginalCard):
         self.deck_id = deck_id
         self.fields = fields
         super().__init__(*args, **kwargs)
-    
+
     def to_dict(self):
         return_dict = {
             "id": self.id,

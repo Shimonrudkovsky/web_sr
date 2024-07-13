@@ -1,24 +1,18 @@
-import sys
 import os
-import pytest
-
+import sys
 from uuid import UUID, uuid4
 
+import pytest
 from fastapi import APIRouter
 
-from config.config import Config
-from config.config import ConfigError, Repositories
+from config.config import Config, ConfigError, Repositories
+from core.models.card import Card
 from core.models.deck import Deck
 from core.models.template import CardTemplate
-from core.repository.interfaces import (
-    CardsRepositoryInterface,
-    TemplateRepositoryInterface,
-    DeckRepositoryInterface,
-)
-from core.models.card import Card
-
+from core.repository.interfaces import CardsRepositoryInterface, DeckRepositoryInterface, TemplateRepositoryInterface
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 
 @pytest.fixture
 def fake_repositories() -> Repositories:
@@ -37,6 +31,7 @@ def fake_repositories() -> Repositories:
         deck_id=deck.id,
         fields={"Word": "test word", "Translation": "test translation"},
     )
+
     class FakeCardsRepository(CardsRepositoryInterface):
         def add(self, card: Card):
             return
@@ -50,17 +45,15 @@ def fake_repositories() -> Repositories:
         def update(self, card: Card):
             return
 
-
     class FakeTemplateRepository(TemplateRepositoryInterface):
         def add(self, template: CardTemplate):
             pass
-        
+
         def delete(self, id: UUID):
             pass
-        
+
         def get(self, id: UUID) -> CardTemplate:
             return template
-
 
     class FakeDeckRepository(DeckRepositoryInterface):
         def add(self, deck: Deck):
@@ -70,11 +63,10 @@ def fake_repositories() -> Repositories:
             pass
 
         def get(self, id: UUID) -> Deck:
-            return 
-        
+            return
+
         def get_all(self) -> list[Deck]:
             return [deck, Deck(name="test deck2")]
-
 
     card_repo = FakeCardsRepository()
     template_repo = FakeTemplateRepository()

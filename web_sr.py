@@ -1,24 +1,19 @@
 import uvicorn
-from fsrs import (
-    FSRS,
-    State,
-    Rating,
-)
-from config.config import Config, Repositories
+
 from api.init import ServerGenerator
-from api.routers.service import service_router
 from api.routers.card import card_router
 from api.routers.deck import deck_router
+from api.routers.service import service_router
 from api.routers.template import template_router
-from uuid import uuid4
+from config.config import Config, Repositories
 from core.models.card import Card
-from core.repository.card.memmory import CardMemoryRepository
-from core.repository.template.memmory import TemplateMemmoryRepository
-from core.repository.deck.memmory import DeckMemmoryRepository
-from core.service import CardService
-from core.models.card import Card
-from core.models.template import CardTemplate
 from core.models.deck import Deck
+from core.models.template import CardTemplate, CardTemplateConfig
+from core.repository.card.memmory import CardMemoryRepository
+from core.repository.deck.memmory import DeckMemmoryRepository
+from core.repository.review_log.memmory import ReviewLogMemmoryRepository
+from core.repository.template.memmory import TemplateMemmoryRepository
+from exceptions.handlers import add_exeption_handlers
 
 
 def init_test_repos(repos: Repositories):
@@ -52,8 +47,7 @@ def init_test_repos(repos: Repositories):
         "Examples_translated": "1. translated example2\n2. another translated example2",
     }
 
-
-    t = CardTemplate(front=template_front, back=template_back)
+    t = CardTemplate(config=CardTemplateConfig(front=template_front, back=template_back))
     repos.templates.add(t)
     d = Deck(name="Test deck")
     repos.decks.add(deck=d)
@@ -69,10 +63,13 @@ def init_test_repos(repos: Repositories):
 card_repo = CardMemoryRepository()
 template_repo = TemplateMemmoryRepository()
 deck_repo = DeckMemmoryRepository()
-repos = Repositories(cards=card_repo, templates=template_repo, decks=deck_repo)
+review_log = ReviewLogMemmoryRepository()
+repos = Repositories(cards=card_repo, templates=template_repo, decks=deck_repo, review_logs=review_log)
 config = Config(8080, [service_router, card_router, deck_router, template_router], repos)
 generator = ServerGenerator(config=config)
 app = generator.initWebServer()
+
+add_exeption_handlers(app=app)
 
 # TODO: remove after testing
 init_test_repos(repos)

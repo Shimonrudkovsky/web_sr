@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from pydantic import BaseModel
 
 
@@ -7,7 +8,7 @@ class NewDeckRequest(BaseModel):
 
 
 class RateCardRequest(BaseModel):
-    rate: int
+    rating: int
 
 
 class NewCardrequest(BaseModel):

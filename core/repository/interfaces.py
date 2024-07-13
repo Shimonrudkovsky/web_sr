@@ -1,27 +1,36 @@
 from abc import ABC, abstractmethod
-
 from uuid import UUID
 
+from fsrs.models import SchedulingInfo
+from pydantic import BaseModel
+
 from core.models.card import Card
-from core.models.template import CardTemplate
 from core.models.deck import Deck
+from core.models.template import CardTemplate
 
 
 class GeneralError(Exception):
     message: str
 
-class RepositoryError(GeneralError):
     def __init__(self, message: str) -> None:
         self.message = message
-    
+
+
+class RepositoryError(GeneralError):
+    pass
+
+
 class CardNotFoundError(RepositoryError):
     pass
+
 
 class TemplateNotFoundError(RepositoryError):
     pass
 
+
 class DeckNotFoundError(RepositoryError):
     pass
+
 
 class CardsRepositoryInterface(ABC):
     @abstractmethod
@@ -33,7 +42,7 @@ class CardsRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def get_by_deck_id(self, deck_id: UUID) -> list[UUID]:
+    def get_by_deck_id(self, deck_id: UUID) -> list[Card]:
         pass
 
     @abstractmethod
@@ -42,6 +51,10 @@ class CardsRepositoryInterface(ABC):
 
     @abstractmethod
     def update(self, card: Card):
+        pass
+
+    @abstractmethod
+    def get_next_due(self, deck_id: UUID) -> Card:
         pass
 
 
@@ -54,6 +67,7 @@ class TemplateRepositoryInterface(ABC):
     def get(self, id: UUID) -> CardTemplate:
         pass
 
+    @abstractmethod
     def get_all(self) -> list[UUID]:
         pass
 
@@ -77,4 +91,10 @@ class DeckRepositoryInterface(ABC):
 
     @abstractmethod
     def delete(self, id: UUID):
+        pass
+
+
+class ReviewLogRepositoryInterface(ABC):
+    @abstractmethod
+    def add(self, scheduled_card: SchedulingInfo):
         pass
