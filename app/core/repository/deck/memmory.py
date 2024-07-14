@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from core.models.deck import Deck
+from app.core.models.deck import Deck
 
 from ..interfaces import DeckNotFoundError, DeckRepositoryInterface
 

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from core.models.card import Card
+from app.core.models.card import Card
 
 from ..interfaces import CardNotFoundError, CardsRepositoryInterface
 

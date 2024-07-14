@@ -4,11 +4,15 @@ from uuid import UUID
 
 import pytest
 
-from config.config import Repositories
-from core.models.card import Card
-from core.models.deck import Deck
-from core.models.template import CardTemplate
-from core.repository.interfaces import CardsRepositoryInterface, DeckRepositoryInterface, TemplateRepositoryInterface
+from app.config.config import Repositories
+from app.core.models.card import Card
+from app.core.models.deck import Deck
+from app.core.models.template import CardTemplate
+from app.core.repository.interfaces import (
+    CardsRepositoryInterface,
+    DeckRepositoryInterface,
+    TemplateRepositoryInterface,
+)
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 

@@ -3,7 +3,7 @@ from typing import Union
 from fastapi import APIRouter
 from fsrs import FSRS
 
-from core.repository.interfaces import (
+from app.core.repository.interfaces import (
     CardsRepositoryInterface,
     DeckRepositoryInterface,
     ReviewLogRepositoryInterface,

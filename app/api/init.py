@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from config.config import Config
+from app.config.config import Config
 
 
 class FastAPI_(FastAPI):

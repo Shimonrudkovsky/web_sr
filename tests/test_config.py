@@ -1,7 +1,7 @@
 import pytest
 from fastapi import APIRouter
 
-from config.config import Config, ConfigError
+from app.config.config import Config, ConfigError
 
 
 @pytest.mark.parametrize(

@@ -334,7 +334,7 @@ python-versions = ">=3.7"
 name = "mypy"
 version = "1.10.1"
 description = "Optional static typing for Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8"
 
@@ -353,7 +353,7 @@ reports = ["lxml"]
 name = "mypy-extensions"
 version = "1.0.0"
 description = "Type system extensions for programs checked with the mypy type checker."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.5"
 
@@ -684,7 +684,7 @@ python-versions = ">=3.8"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f393a9f4c9528e5b52981a87d2af524f81dda75600d55e58fa2a3f7da7d6fa5d"
+content-hash = "37b1874d5b0cdd04943ce6e16264d93d119ef6cf7bafdbf82542d93f05cb809d"
 
 [metadata.files]
 annotated-types = []

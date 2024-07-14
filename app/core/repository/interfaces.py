@@ -3,9 +3,9 @@ from uuid import UUID
 
 from fsrs.models import SchedulingInfo
 
-from core.models.card import Card
-from core.models.deck import Deck
-from core.models.template import CardTemplate
+from app.core.models.card import Card
+from app.core.models.deck import Deck
+from app.core.models.template import CardTemplate
 
 
 class GeneralError(Exception):

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from core.models.template import CardTemplate
+from app.core.models.template import CardTemplate
 
 from ..interfaces import TemplateNotFoundError, TemplateRepositoryInterface
 

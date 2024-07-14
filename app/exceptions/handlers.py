@@ -3,7 +3,12 @@ from typing import Union
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
-from exceptions.exceptions import CardErrorException, CardNotFoundException, DeckErrorException, DeckNotFoundException
+from app.exceptions.exceptions import (
+    CardErrorException,
+    CardNotFoundException,
+    DeckErrorException,
+    DeckNotFoundException,
+)
 
 
 async def error_handler(

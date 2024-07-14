@@ -4,10 +4,10 @@ import jinja2
 from fastapi import Request
 from fsrs.models import SchedulingInfo
 
-from core.models.card import Card
-from core.models.deck import Deck
-from core.models.template import CardTemplate
-from core.repository.interfaces import (
+from app.core.models.card import Card
+from app.core.models.deck import Deck
+from app.core.models.template import CardTemplate
+from app.core.repository.interfaces import (
     CardNotFoundError,
     CardsRepositoryInterface,
     DeckNotFoundError,
@@ -17,7 +17,7 @@ from core.repository.interfaces import (
     TemplateNotFoundError,
     TemplateRepositoryInterface,
 )
-from schemas.response import CardResponse, CardTemplateResponse
+from app.schemas.response import CardResponse, CardTemplateResponse
 
 
 class CardService:

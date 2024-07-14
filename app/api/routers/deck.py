@@ -2,11 +2,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from core.repository.interfaces import RepositoryError
-from core.service import CardService, DeckService
-from exceptions.exceptions import CardNotFoundException, DeckErrorException, DeckNotFoundException
-from schemas.request import NewDeckRequest
-from schemas.response import BaseExeptionResponse, CardResponse, DeckResponse
+from app.core.repository.interfaces import RepositoryError
+from app.core.service import CardService, DeckService
+from app.exceptions.exceptions import CardNotFoundException, DeckErrorException, DeckNotFoundException
+from app.schemas.request import NewDeckRequest
+from app.schemas.response import BaseExeptionResponse, CardResponse, DeckResponse
 
 deck_router = APIRouter()
 

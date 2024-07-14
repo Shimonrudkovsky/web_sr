@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fsrs.models import ReviewLog, SchedulingInfo
 
-from core.models.card import Card
+from app.core.models.card import Card
 
 from ..interfaces import ReviewLogRepositoryInterface
 

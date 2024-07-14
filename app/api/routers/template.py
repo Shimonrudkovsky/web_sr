@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from core.service import TemplateService
+from app.core.service import TemplateService
 
 template_router = APIRouter()
 
