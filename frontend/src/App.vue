@@ -17,7 +17,7 @@ var cards = ref([])
 
 async function getDecks() {
   try {
-    var response = await fetch('http://localhost:8080/decks')
+    var response = await fetch('http://localhost:8081/decks')
     var data = await response.json()
     decks.value = data
   } catch (error) {
@@ -27,7 +27,7 @@ async function getDecks() {
 
 async function rateCard(vote, card_id) {
   try {
-    var response = await fetch(`http://localhost:8080/card/${card_id}/rating`, {
+    var response = await fetch(`http://localhost:8081/card/${card_id}/rating`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -53,7 +53,7 @@ async function getCards(deck_id) {
   show_card_list.value = !show_card_list.value
   
   try {
-    var resp = await fetch(`http://localhost:8080/deck/${deck_id}`, {method: 'GET'})
+    var resp = await fetch(`http://localhost:8081/deck/${deck_id}`, {method: 'GET'})
     var data = await resp.json()
     cards.value = data
     current_deck_id.value = deck_id
@@ -68,7 +68,7 @@ async function getNextCard(deck_id) {
   show_front.value = true
 
   try {
-    var resp = await fetch(`http://localhost:8080/deck/${deck_id}/next_card`)
+    var resp = await fetch(`http://localhost:8081/deck/${deck_id}/next_card`)
     var data = await resp.json()
     card_id.value = data.id
     card_template_front.value = data.template.front

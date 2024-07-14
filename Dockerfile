@@ -20,9 +20,6 @@ COPY ./app /app/app
 
 COPY ./web_sr.py /app
 
-EXPOSE 8080
+EXPOSE 8081
 
-# RUN cd app
-
-CMD ["poetry", "run", "uvicorn", "web_sr:app", "--host", "0.0.0.0", "--port", "8080"]
-# CMD ["poetry", "run", "python3", "-m", "web_sr"]
+CMD ["poetry", "run", "uvicorn", "web_sr:app", "--host", "0.0.0.0", "--port", "8081"]

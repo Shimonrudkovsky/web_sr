@@ -73,7 +73,7 @@ def init_repositories() -> Repositories:
 
 
 def init_config(repositories: Repositories) -> Config:
-    return Config(8080, [service_router, card_router, deck_router, template_router], repositories)
+    return Config(8081, [service_router, card_router, deck_router, template_router], repositories)
 
 
 def init_app(config: Config) -> FastAPI:
