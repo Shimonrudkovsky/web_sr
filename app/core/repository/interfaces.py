@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 from uuid import UUID
 
 from fsrs.models import SchedulingInfo
@@ -31,69 +32,77 @@ class DeckNotFoundError(RepositoryError):
     pass
 
 
-class CardsRepositoryInterface(ABC):
-    @abstractmethod
-    def add(self, card: Card):
-        pass
+class AbstractRepository(ABC):
+    storage: Any
 
     @abstractmethod
-    def get(self, id: UUID) -> Card:
-        pass
-
-    @abstractmethod
-    def get_by_deck_id(self, deck_id: UUID) -> list[Card]:
-        pass
-
-    @abstractmethod
-    def delete(self, id: UUID):
-        pass
-
-    @abstractmethod
-    def update(self, card: Card):
-        pass
-
-    @abstractmethod
-    def get_next_due(self, deck_id: UUID) -> Card:
+    def __init__(self, storage: Any) -> None:
         pass
 
 
-class TemplateRepositoryInterface(ABC):
+class CardsRepositoryInterface(AbstractRepository):
     @abstractmethod
-    def add(self, template: CardTemplate):
+    async def add(self, card: Card) -> UUID:
         pass
 
     @abstractmethod
-    def get(self, id: UUID) -> CardTemplate:
+    async def get(self, id: UUID) -> Card:
         pass
 
     @abstractmethod
-    def get_all(self) -> list[UUID]:
+    async def get_by_deck_id(self, deck_id: UUID) -> list[Card]:
         pass
 
     @abstractmethod
-    def delete(self, id: UUID):
-        pass
-
-
-class DeckRepositoryInterface(ABC):
-    @abstractmethod
-    def add(self, deck: Deck) -> UUID:
+    async def delete(self, id: UUID):
         pass
 
     @abstractmethod
-    def get(self, id: UUID) -> Deck:
+    async def update(self, card: Card):
         pass
 
     @abstractmethod
-    def get_all(self) -> list[Deck]:
-        pass
-
-    @abstractmethod
-    def delete(self, id: UUID):
+    async def get_next_due(self, deck_id: UUID) -> Card:
         pass
 
 
-class ReviewLogRepositoryInterface(ABC):
+class TemplateRepositoryInterface(AbstractRepository):
     @abstractmethod
-    def add(self, scheduled_card: SchedulingInfo):
+    async def add(self, template: CardTemplate):
+        pass
+
+    @abstractmethod
+    async def get(self, id: UUID) -> CardTemplate:
+        pass
+
+    @abstractmethod
+    async def get_all(self) -> list[CardTemplate]:
+        pass
+
+    @abstractmethod
+    async def delete(self, id: UUID):
+        pass
+
+
+class DeckRepositoryInterface(AbstractRepository):
+    @abstractmethod
+    async def add(self, deck: Deck) -> UUID:
+        pass
+
+    @abstractmethod
+    async def get(self, id: UUID) -> Deck:
+        pass
+
+    @abstractmethod
+    async def get_all(self) -> list[Deck]:
+        pass
+
+    @abstractmethod
+    async def delete(self, id: UUID):
+        pass
+
+
+class ReviewLogRepositoryInterface(AbstractRepository):
+    @abstractmethod
+    async def add(self, scheduling_info: SchedulingInfo):
         pass

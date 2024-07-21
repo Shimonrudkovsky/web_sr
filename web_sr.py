@@ -1,25 +1,42 @@
+from contextlib import asynccontextmanager
+
 import uvicorn
-
 from fastapi import FastAPI
-
 
 from app.api.init import ServerGenerator
 from app.api.routers.card import card_router
 from app.api.routers.deck import deck_router
 from app.api.routers.service import service_router
 from app.api.routers.template import template_router
-from app.config.config import Config, Repositories
+from app.config.config import Config, DBConfig, Lifespan
 from app.core.models.card import Card
 from app.core.models.deck import Deck
 from app.core.models.template import CardTemplate, CardTemplateConfig
-from app.core.repository.card.memmory import CardMemoryRepository
-from app.core.repository.deck.memmory import DeckMemmoryRepository
+from app.core.repository import Repositories
+from app.core.repository.card.postgres import CardsPostgresRepository
+from app.core.repository.deck.postgres import DeckPostgresRepository
 from app.core.repository.review_log.memmory import ReviewLogMemmoryRepository
-from app.core.repository.template.memmory import TemplateMemmoryRepository
+from app.core.repository.template.postgres import TemplatePostgresReposytory
+from app.db.postgres import AsyncPGStorage, PostgresStorage
 from app.exceptions.handlers import add_exeption_handlers
 
 
-def init_repos_with_test_data(repos: Repositories):
+async def init_repos_with_test_data(app: FastAPI):
+    storage: PostgresStorage = await AsyncPGStorage.init(app.config.db)
+    # card_repo = CardMemoryRepository()
+    card_repo = CardsPostgresRepository(storage=storage)
+    # template_repo = TemplateMemmoryRepository()
+    template_repo = TemplatePostgresReposytory(storage=storage)
+    deck_repo = DeckPostgresRepository(storage=storage)
+    review_log = ReviewLogMemmoryRepository()
+
+    repos = Repositories(cards=card_repo, templates=template_repo, decks=deck_repo, review_logs=review_log)
+
+    async with repos.decks.storage.conn.cursor() as cur:
+        await cur.execute("TRUNCATE web_sr.decks CASCADE;")
+    async with repos.templates.storage.conn.cursor() as cur:
+        await cur.execute("TRUNCATE web_sr.templates CASCADE;")
+
     template_front = """
         <h2>{{Word}}</h2>
         <hr>
@@ -51,29 +68,43 @@ def init_repos_with_test_data(repos: Repositories):
     }
 
     t = CardTemplate(config=CardTemplateConfig(front=template_front, back=template_back))
-    repos.templates.add(t)
+    await repos.templates.add(t)
     d = Deck(name="Test deck")
-    repos.decks.add(deck=d)
-    repos.decks.add(deck=Deck(name="Another test deck"))
+    await repos.decks.add(deck=d)
+    await repos.decks.add(deck=Deck(name="Another test deck"))
     c1 = Card(template_id=t.id, deck_id=d.id, fields=fields1)
-    repos.cards.add(c1)
+    await repos.cards.add(c1)
     c2 = Card(template_id=t.id, deck_id=d.id, fields=fields2)
-    repos.cards.add(c2)
+    await repos.cards.add(c2)
 
     print(f"template id: {t.id}\ndeck id: {d.id}")
 
 
-def init_repositories() -> Repositories:
-    card_repo = CardMemoryRepository()
-    template_repo = TemplateMemmoryRepository()
-    deck_repo = DeckMemmoryRepository()
-    review_log = ReviewLogMemmoryRepository()
+# async def init_repositories(db_config: DBConfig) -> Repositories:
+#     conn = await AsyncPGStorage.init(db_config)
+#     # card_repo = CardMemoryRepository()
+#     card_repo = DeckPostgresRepository(conn=conn)
+#     template_repo = TemplateMemmoryRepository()
+#     deck_repo = DeckMemmoryRepository()
+#     review_log = ReviewLogMemmoryRepository()
 
-    return Repositories(cards=card_repo, templates=template_repo, decks=deck_repo, review_logs=review_log)
+#     return Repositories(cards=card_repo, templates=template_repo, decks=deck_repo, review_logs=review_log)
 
 
-def init_config(repositories: Repositories) -> Config:
-    return Config(8081, [service_router, card_router, deck_router, template_router], repositories)
+def init_config(lifespan: Lifespan) -> Config:
+    # TODO: remove hardcode
+    db_config = DBConfig(
+        host="localhost",
+        database="postgres",
+        user="postgres",
+        password="",
+    )
+    return Config(
+        port=8081,
+        routers=[service_router, card_router, deck_router, template_router],
+        lifespan=lifespan,
+        db_cofig=db_config,
+    )
 
 
 def init_app(config: Config) -> FastAPI:
@@ -85,14 +116,15 @@ def init_app(config: Config) -> FastAPI:
     return app
 
 
-repos = init_repositories()
-config = init_config(repositories=repos)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_repos_with_test_data(app)
+    yield
 
-# TODO: remove after testing
-init_repos_with_test_data(repos)
+
+config = init_config(lifespan=lifespan)
+
+app = init_app(config)
 
 if __name__ == "__main__":
-    app = init_app(config)
     uvicorn.run(app, port=config.port)
-else:
-    app = init_app(config)

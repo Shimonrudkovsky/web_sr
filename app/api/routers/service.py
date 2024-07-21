@@ -4,5 +4,5 @@ service_router = APIRouter()
 
 
 @service_router.get("/ping")
-def home() -> dict:
+def ping() -> dict:
     return {"message": "pong"}

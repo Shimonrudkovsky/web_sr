@@ -22,12 +22,12 @@ card_router = APIRouter()
         400: {"description": "Can't create new card", "model": BaseExeptionResponse},
     },
 )
-def new_card(
+async def new_card(
     new_card: NewCardrequest,
     card_service: CardService = Depends(CardService),
 ) -> UUID:
     try:
-        new_card_id = card_service.new_card(new_card.template_id, new_card.deck_id, new_card.fields)
+        new_card_id = await card_service.new_card(new_card.template_id, new_card.deck_id, new_card.fields)
     except RepositoryError as err:
         raise CardNotFoundException(message=err.message)
 
@@ -42,12 +42,12 @@ def new_card(
         404: {"description": "Card not found", "model": BaseExeptionResponse},
     },
 )
-def get_card(
+async def get_card(
     card_id: UUID,
     card_service: CardService = Depends(CardService),
 ) -> CardResponse:
     try:
-        return card_service.get_card_response(card_id)
+        return await card_service.get_card_response(card_id)
     except CardNotFoundError as err:
         raise CardNotFoundException(message=err.message)
 
@@ -60,11 +60,11 @@ def get_card(
         404: {"description": "Card not found", "model": BaseExeptionResponse},
     },
 )
-def rate(
+async def rate(
     card_id: UUID, request: Request, request_body: RateCardRequest, card_service: CardService = Depends(CardService)
 ) -> str:
     try:
-        card = card_service.get_card(card_id)
+        card = await card_service.get_card(card_id)
     except CardNotFoundError as err:
         raise CardNotFoundException(message=err.message)
     now = datetime.now(timezone.utc)
@@ -83,7 +83,7 @@ def rate(
         raise UnknownRatingException(message=str(request_body.rating))
 
     try:
-        card_service.update(scheduled_card=reviewed_card)
+        await card_service.update(scheduled_card=reviewed_card)
     except RepositoryError as err:
         raise CardErrorException(message=f"card update error: {err.message}")
 

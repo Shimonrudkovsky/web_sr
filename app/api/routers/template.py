@@ -8,9 +8,9 @@ template_router = APIRouter()
 
 
 @template_router.get("/templates")
-def get_templates(template_service: TemplateService = Depends(TemplateService)) -> list[UUID]:
+async def get_templates(template_service: TemplateService = Depends(TemplateService)) -> list[UUID]:
     try:
-        template_list = template_service.template_list()
+        template_list = await template_service.template_list()
     except RecursionError as err:
         raise err
 

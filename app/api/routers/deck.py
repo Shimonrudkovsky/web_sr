@@ -19,11 +19,11 @@ deck_router = APIRouter()
         404: {"decription": "Deck not found", "model": BaseExeptionResponse},
     },
 )
-def get_decks(
+async def get_decks(
     deck_service: DeckService = Depends(DeckService),
 ) -> list[DeckResponse]:
     try:
-        deck_list = deck_service.decks_list()
+        deck_list = await deck_service.decks_list()
     except RepositoryError as err:
         raise DeckNotFoundException(message=err.message)
 
@@ -41,9 +41,9 @@ def get_decks(
         400: {"description": "Unable to create deck", "model": BaseExeptionResponse},
     },
 )
-def new_deck(new_deck: NewDeckRequest, deck_service: DeckService = Depends(DeckService)) -> UUID:
+async def new_deck(new_deck: NewDeckRequest, deck_service: DeckService = Depends(DeckService)) -> UUID:
     try:
-        new_deck_id = deck_service.new_deck(name=new_deck.name)
+        new_deck_id = await deck_service.new_deck(name=new_deck.name)
     except RepositoryError as err:
         raise DeckErrorException(message=f"deck creation error: {err.message}")
 
@@ -58,12 +58,12 @@ def new_deck(new_deck: NewDeckRequest, deck_service: DeckService = Depends(DeckS
         404: {"decription": "Deck not found", "model": BaseExeptionResponse},
     },
 )
-def get_deck_info(
+async def get_deck_info(
     deck_id: UUID,
     deck_service: DeckService = Depends(DeckService),
 ) -> list[UUID]:
     try:
-        deck_info = deck_service.get_deck_info(deck_id=deck_id)
+        deck_info = await deck_service.get_deck_info(deck_id=deck_id)
     except RecursionError:
         raise DeckNotFoundException(message=str(deck_id))
 
@@ -77,12 +77,12 @@ def get_deck_info(
         400: {"description": "Unable to create deck", "model": BaseExeptionResponse},
     },
 )
-def delete_deck(
+async def delete_deck(
     deck_id: UUID,
     deck_service: DeckService = Depends(DeckService),
 ) -> str:
     try:
-        deck_service.delete(deck_id=deck_id)
+        await deck_service.delete(deck_id=deck_id)
     except RepositoryError as err:
         raise DeckErrorException(message=f"deck deletion error: {err.message}")
 
@@ -97,8 +97,8 @@ def delete_deck(
         404: {"decription": "Deck not found", "model": BaseExeptionResponse},
     },
 )
-def draw_card(deck_id: UUID, card_service: CardService = Depends(CardService)) -> CardResponse:
+async def draw_card(deck_id: UUID, card_service: CardService = Depends(CardService)) -> CardResponse:
     try:
-        return card_service.get_next_due(deck_id=deck_id)
+        return await card_service.get_next_due(deck_id=deck_id)
     except RepositoryError as err:
         raise CardNotFoundException(message=err.message)

@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,7 +9,7 @@ class FastAPI_(FastAPI):
     config: Config
 
     def __init__(self, config: Config, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+        super().__init__(lifespan=config.lifespan, *args, **kwargs)
         self.config: Config = config
 
 

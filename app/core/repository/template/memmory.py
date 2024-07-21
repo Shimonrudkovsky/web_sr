@@ -9,10 +9,10 @@ class TemplateMemmoryRepository(TemplateRepositoryInterface):
     def __init__(self) -> None:
         self.storage: dict[UUID, CardTemplate] = dict()
 
-    def add(self, template: CardTemplate) -> None:
+    async def add(self, template: CardTemplate) -> None:
         self.storage[template.id] = template
 
-    def get(self, id: UUID) -> CardTemplate:
+    async def get(self, id: UUID) -> CardTemplate:
         template = self.storage.get(id)
 
         if not template:
@@ -20,12 +20,12 @@ class TemplateMemmoryRepository(TemplateRepositoryInterface):
 
         return template
 
-    def get_all(self) -> list[UUID]:
+    async def get_all(self) -> list[UUID]:
         templates: list[UUID] = list(self.storage.keys())
         if templates == []:
             raise TemplateNotFoundError(message="template list is empty")
 
         return templates
 
-    def delete(self, id: UUID) -> None:
+    async def delete(self, id: UUID) -> None:
         del self.storage[id]

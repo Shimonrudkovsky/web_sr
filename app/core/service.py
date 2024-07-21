@@ -1,12 +1,13 @@
 from uuid import UUID
 
 import jinja2
-from fastapi import Request
+from fastapi import Depends
 from fsrs.models import SchedulingInfo
 
 from app.core.models.card import Card
 from app.core.models.deck import Deck
 from app.core.models.template import CardTemplate
+from app.core.repository import Repositories, get_repositories
 from app.core.repository.interfaces import (
     CardNotFoundError,
     CardsRepositoryInterface,
@@ -26,15 +27,15 @@ class CardService:
     deck_repository: DeckRepositoryInterface
     review_log_repository: ReviewLogRepositoryInterface
 
-    def __init__(self, request: Request):
-        self.card_repository = request.app.config.repositories.cards
-        self.template_repository = request.app.config.repositories.templates
-        self.deck_repository = request.app.config.repositories.decks
-        self.review_log_repository = request.app.config.repositories.review_logs
+    def __init__(self, repositories: Repositories = Depends(get_repositories)):
+        self.card_repository = repositories.cards
+        self.template_repository = repositories.templates
+        self.deck_repository = repositories.decks
+        self.review_log_repository = repositories.review_logs
 
-    def _render_card(self, card: Card) -> CardResponse:
+    async def _render_card(self, card: Card) -> CardResponse:
         try:
-            template = self.template_repository.get(card.template_id)
+            template = await self.template_repository.get(card.template_id)
         except TemplateNotFoundError as err:
             raise err
 
@@ -50,80 +51,83 @@ class CardService:
 
         return card_resp
 
-    def get_card(self, card_id: UUID) -> Card:
+    async def get_card(self, card_id: UUID) -> Card:
         try:
-            return self.card_repository.get(card_id)
+            card = await self.card_repository.get(card_id)
+            card.localize_timestamps()
+            return card
         except CardNotFoundError as err:
             raise err
 
-    def get_next_due(self, deck_id: UUID) -> CardResponse:
+    async def get_next_due(self, deck_id: UUID) -> CardResponse:
         try:
-            card = self.card_repository.get_next_due(deck_id=deck_id)
+            card = await self.card_repository.get_next_due(deck_id=deck_id)
         except CardNotFoundError as err:
             raise err
 
-        card_resp = self._render_card(card=card)
+        card_resp = await self._render_card(card=card)
 
         return card_resp
 
-    def get_card_response(self, card_id: UUID) -> CardResponse:
+    async def get_card_response(self, card_id: UUID) -> CardResponse:
         try:
-            card = self.card_repository.get(card_id)
+            card = await self.card_repository.get(card_id)
         except CardNotFoundError as err:
             raise err
 
-        card_resp = self._render_card(card=card)
+        card_resp = await self._render_card(card=card)
 
         return card_resp
 
-    def new_card(
+    async def new_card(
         self,
         template_id: UUID,
         deck_id: UUID,
         fields: dict,
     ) -> UUID:
+        id = None
         card = Card(template_id=template_id, deck_id=deck_id, fields=fields)
         try:
-            self.card_repository.add(card)
+            id = await self.card_repository.add(card)
         except RepositoryError as err:
             raise err
 
-        return card.id
+        return id
 
-    def add_template(self, template: CardTemplate):
+    async def add_template(self, template: CardTemplate):
         try:
-            self.template_repository.add(template)
+            await self.template_repository.add(template)
         except RepositoryError as err:
             raise err
 
-    def update(self, scheduled_card: SchedulingInfo):
-        self.card_repository.update(card=scheduled_card.card)
-        self.review_log_repository.add(scheduled_card=scheduled_card)
+    async def update(self, scheduled_card: SchedulingInfo):
+        await self.card_repository.update(card=scheduled_card.card)
+        await self.review_log_repository.add(scheduling_info=scheduled_card)
 
 
 class DeckService:
     deck_repository: DeckRepositoryInterface
     card_repository: CardsRepositoryInterface
 
-    def __init__(self, request: Request) -> None:
-        self.deck_repository: DeckRepositoryInterface = request.app.config.repositories.decks
-        self.card_repository: CardsRepositoryInterface = request.app.config.repositories.cards
+    def __init__(self, repositories: Repositories = Depends(get_repositories)) -> None:
+        self.deck_repository: DeckRepositoryInterface = repositories.decks
+        self.card_repository: CardsRepositoryInterface = repositories.cards
 
-    def new_deck(self, name: str) -> UUID:
+    async def new_deck(self, name: str) -> UUID:
         deck = Deck(name=name)
-        self.deck_repository.add(deck)
+        await self.deck_repository.add(deck)
         return deck.id
 
-    def get_deck_info(self, deck_id: UUID) -> list[UUID]:
+    async def get_deck_info(self, deck_id: UUID) -> list[UUID]:
         try:
-            cards: list[Card] = self.card_repository.get_by_deck_id(deck_id=deck_id)
+            cards: list[Card] = await self.card_repository.get_by_deck_id(deck_id=deck_id)
             return [c.id for c in cards]
         except DeckNotFoundError as err:
             raise err
 
-    def decks_list(self) -> list[Deck]:
+    async def decks_list(self) -> list[Deck]:
         try:
-            decs = self.deck_repository.get_all()
+            decs = await self.deck_repository.get_all()
         except RepositoryError as err:
             raise err
 
@@ -132,15 +136,17 @@ class DeckService:
 
         return decs
 
-    def delete(self, deck_id: UUID):
-        self.deck_repository.delete(deck_id)
+    async def delete(self, deck_id: UUID):
+        await self.deck_repository.delete(deck_id)
 
 
 class TemplateService:
     template_repository: TemplateRepositoryInterface
 
-    def __init__(self, request: Request):
-        self.template_repository = request.app.config.repositories.templates
+    def __init__(self, repositories: Repositories = Depends(get_repositories)):
+        self.template_repository = repositories.templates
 
-    def template_list(self) -> list[UUID]:
-        return self.template_repository.get_all()
+    async def template_list(self) -> list[UUID]:
+        result = await self.template_repository.get_all()
+
+        return [i.id for i in result]
