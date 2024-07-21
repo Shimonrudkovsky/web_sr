@@ -23,7 +23,3 @@ Web SR is a small web application designed for spaced repetition learning, utili
     ```sh
     docker-compose up --build
     ```
-
-## Usage
-
-Navigate to `http://localhost:8081` in your web browser.
